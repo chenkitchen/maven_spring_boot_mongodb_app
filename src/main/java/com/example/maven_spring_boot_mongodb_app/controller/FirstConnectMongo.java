@@ -31,6 +31,40 @@ import java.util.*;
 @RequestMapping("app/controller")
 public class FirstConnectMongo {
 
+    @PostMapping("/getAllData")
+    public @ResponseBody ResponseEntity getAllData(@RequestBody Params pages) {
+        createMongoConfig("articles_test");
+        Document filter = new Document();
+        int pageC = pages.getCurrentPage();
+        int pageSize = pages.getPageSize();
+//        List<Document> doc = mongoCollection.find(filter).skip((pageC - 1) * pageSize).limit(pageSize).into(new ArrayList<>());
+        FindIterable<Document> doci = mongoCollection.find(
+                        Filters.empty(), //查所有数据
+                        Document.class
+                )
+                .sort(Sorts.ascending("updateAt"))
+                .skip((pageC - 1) * pageSize)
+                .limit(pageSize)
+                .projection(
+                        new Document("title", 1)
+                                .append("createAt", 1)
+                                .append("author", 1)
+                                .append("summary", 1)
+                                .append("type", 1)
+                                .append("views", 1)
+                                .append("updateAt", 1)
+                                .append("beforeMoney",1)
+                                .append("afterMoney",1)
+                                .append("beforeMoneyDay",1)
+                                .append("afterMoneyDay",1)
+                                .append("_id",0) //默认是 1 因此要去掉
+                );
+        List<Document> doc = doci.into(new ArrayList<>());
+        long total = mongoCollection.countDocuments();
+//        mongoClient.close();
+        return createResponse(doc,total);
+    }
+
     @PostMapping("/find")
     public String find(@RequestBody Params json) {
         createMongoConfig("test_connect");
@@ -50,10 +84,10 @@ public class FirstConnectMongo {
     public String insert() {
         createMongoConfig("articles_test");
         Date currentDate = new Date();
-        Document doc = new Document("title", "tdfdfransfdddorm是否值233得去看看").append("author", new Document("name", "wuwua").append("gender", "female"))
-                .append("summary", "次选定要设置断选定要设置断点的代码行，在行号的区域后面单击鼠标左键即可。点的代码行，在行号的区域后面单击鼠标左键即可。序更新选定要设置断点的代码行，在行号的区域后面单击鼠标左键即可。")
-                .append("type", "小dddd说")
-                .append("tags", Arrays.asList("SSS", "巅峰赛", "??"))
+        Document doc = new Document("title", "的人儿").append("author", new Document("name", null).append("gender", "female"))
+                .append("summary", "。可即键左标鼠击单面后域区的号行在，行")
+                .append("type", "可以")
+                .append("tags", Arrays.asList("one"))
                 .append("views", 0)
                 .append("updateAt", currentDate)
                 .append("createAt", currentDate);
@@ -101,7 +135,7 @@ public class FirstConnectMongo {
                 .sort(Sorts.ascending("createAt"))
                 .limit(2);
 
-        List<Document> doc = doci.into(new ArrayList<>());
+        List<Document> doc = doci.into(new ArrayList<>()); //将 FindInterable 变成 List
         mongoClient.close();
         ResponseData res = new ResponseData("success", "ok", doc);
 //        return createSuccessBody(doc.toString());
@@ -156,12 +190,28 @@ public class FirstConnectMongo {
                 .body(createBody(doc));
         return response;
     }
+    public static ResponseEntity<Map<String, Object>> createResponse(List<Document> docs,long total){
+        ResponseEntity<Map<String, Object>> response = ResponseEntity
+                .status(HttpStatus.ACCEPTED)
+                .header("X-Custom-Header", "customValue")
+                .body(createBody(docs,total));
+        return response;
+    }
 
     public static Map<String, Object> createBody(Document doc) {
         Map<String, Object> map = new HashMap<>();
         map.put("states", "success");
 //        map.put("data",doc.toMap()); // org.mongodb 4.8.1版本支持
         map.put("data",localToMap(doc));
+        return map;
+    }
+    public static  Map<String, Object> createBody(List<Document> docs,long total) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("states", "success");
+//        map.put("data",doc.toMap()); // org.mongodb 4.8.1版本支持
+        map.put("data",docs);
+        map.put("dataNum", total);
+        map.put("err",0);
         return map;
     }
 

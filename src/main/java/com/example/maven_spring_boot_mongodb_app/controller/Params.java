@@ -10,6 +10,8 @@ public class Params {
     private String type;
     private String title;
     private List<String> tags;
+    private int currentPage;
+    private int pageSize;
     public String getName() {
         return name;
     }
@@ -24,5 +26,11 @@ public class Params {
     }
     public List<String> getTags() {
         return tags;
+    }
+    public int getCurrentPage() {
+        return currentPage;
+    }
+    public int getPageSize() {
+        return pageSize;
     }
 }
