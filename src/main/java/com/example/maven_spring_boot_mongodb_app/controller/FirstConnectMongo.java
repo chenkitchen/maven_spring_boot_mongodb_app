@@ -159,7 +159,7 @@ public class FirstConnectMongo {
 
 
         settings.addCommandListener(new SlowLogLis(0))
-                .applyConnectionString(new ConnectionString("mongodb://localhost:27017")); //将请求url 和 setter 通过管道进行调用
+                .applyConnectionString(new ConnectionString("mongodb://admin:12345678@localhost:27017")); //将请求url 和 setter 通过管道进行调用
 
         mongoClient = MongoClients.create(settings.build());
         mongoDatabase = mongoClient.getDatabase("my_first_json_data");

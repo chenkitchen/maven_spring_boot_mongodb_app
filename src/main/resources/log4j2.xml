@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO" monitorInterval="300">
+    <!-- 定义日志输出目标（Appenders） -->
+    <properties>
+<!--        日志目录-->
+        <property name="LOG_ROOT">log</property>
+<!--        主日志文件-->
+        <property name="FILE_NAME">application</property>
+    </properties>
+    <Appenders>
+<!--   下面      配置了两种 方式记录-->
+
+        <!-- 控制台输出 -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n"/>
+        </Console>
+
+        <!-- 文件输出 -->
+<!--        <File name="File" fileName="logs/app.log">-->
+<!--            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n"/>-->
+<!--        </File>-->
+<!--        指向一个日志文件-->
+        <RollingRandomAccessFile name="MainFile" fileName="${LOG_ROOT}/${FILE_NAME}.log" filePattern="${LOG_ROOT}/$${date:yyyy-MM}/${FILE_NAME}-%d{yyyy-MM-dd}-%i.log">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level -%l -%msg%n">
+                <Policies>
+                    <TimeBaseTriggeringPollcy interval="1" />
+                    <SizeBaseTriggeringPollcy size="50 MB" />
+<!--                    最多保存 20个 日志-->
+                    <DefaultRolloverStrategy max="20" />
+                </Policies>
+            </PatternLayout>
+
+        </RollingRandomAccessFile>
+    </Appenders>
+
+    <!-- 定义日志记录器（Loggers） -->
+    <Loggers>
+        <!-- 根日志记录器 -->
+        <Root level="info">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="MainFile"/>
+        </Root>
+
+        <!-- 自定义日志记录器 -->
+<!--        additivity 为true表示 继承上级-->
+        <Logger name="com.example" level="info" additivity="true"></Logger>
+    </Loggers>
+</Configuration>
