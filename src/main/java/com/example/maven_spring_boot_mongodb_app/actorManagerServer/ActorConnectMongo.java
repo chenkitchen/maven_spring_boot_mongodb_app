@@ -213,7 +213,16 @@ public class ActorConnectMongo {
 //                Filters.eq("_id",new ObjectId(pages.getId())), //查所有数据
 //                Document.class
 //        );
-        Bson doci = Filters.eq("_id",new ObjectId(pages.getId()));
+        String id = pages.getId();
+        Bson doci;
+        System.out.println(id.length());
+        if(id.length() == 24 && id.matches("[0-9a-fA-F]+")){
+            doci = Filters.eq("_id",new ObjectId(pages.getId()));
+        }else{
+            doci = Filters.eq("_id",id);
+            System.err.println("Invalid hex string! 入参id有问题");
+        }
+//        Bson doci = Filters.eq("_id",new ObjectId(pages.getId()));
         Bson update = Updates.set("name", pages.getName());
         UpdateResult result = mongoCollection.updateOne(doci, update);
         return commonUtils.createResponse("修改了 " + result.getMatchedCount() + "个文档");
