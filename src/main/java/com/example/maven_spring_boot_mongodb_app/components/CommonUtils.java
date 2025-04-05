@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 @Component
 public class CommonUtils {
@@ -48,5 +49,13 @@ public class CommonUtils {
         map.put("data", mapI);
         map.put("err",0);
         return map;
+    }
+
+    public String escapeRegex(String str){
+        if (str == null) {
+            return "";
+        }
+        // 转义所有正则表达式特殊字符
+        return Pattern.quote(str);
     }
 }

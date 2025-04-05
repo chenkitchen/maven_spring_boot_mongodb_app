@@ -143,7 +143,7 @@ public class ActorConnectMongo {
     public @ResponseBody ResponseEntity getActor(String name){
         createMongoConfig("actor_manage_system");
         FindIterable<Document> doci = mongoCollection.find(
-                        Filters.regex("name", name), //模糊匹配
+                        Filters.regex("name", commonUtils.escapeRegex(name)), //模糊匹配
                         Document.class
                 )
                 .sort(Sorts.ascending("updateAt"))
@@ -180,7 +180,7 @@ public class ActorConnectMongo {
     public @ResponseBody ResponseEntity getVideoCode(String name){
         createMongoConfig("actor_manage_system");
         FindIterable<Document> doci = mongoCollection.find(
-                        Filters.regex("videoCode", name), //模糊匹配
+                        Filters.regex("videoCode", commonUtils.escapeRegex(name) ), //模糊匹配
                         Document.class
                 )
                 .sort(Sorts.ascending("updateAt"))
