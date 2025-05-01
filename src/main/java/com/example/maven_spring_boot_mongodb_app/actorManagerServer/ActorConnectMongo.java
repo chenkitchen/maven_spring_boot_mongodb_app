@@ -61,6 +61,64 @@ public class ActorConnectMongo {
         return commonUtils.createResponse(doc,total,"customValue");
     }
 
+    @PostMapping("/getMagnetData")
+    public @ResponseBody ResponseEntity getMagnetData(@RequestBody Params pages) {
+        createMongoConfig("av_title_json_collect");
+        int pageC = pages.getCurrentPage();
+        int pageSize = pages.getPageSize();
+        FindIterable<Document> doci = mongoCollection.find(
+                        Filters.empty(), //查所有数据
+                        Document.class
+                )
+                .skip((pageC - 1) * pageSize)
+                .limit(pageSize)
+                .projection(
+                        new Document("page_name", 1)
+                                .append("video_size", 1)
+                                .append("video_title", 1)
+                                .append("video_url", 1)
+                                .append("_id",1) //默认是 1 因此要去掉
+                );
+        List<Document> doc = doci.into(new ArrayList<>());
+        commonUtils.addId(doc);
+        long total = mongoCollection.countDocuments();
+        mongoClient.close();
+        return commonUtils.createResponse(doc,total,"customValue");
+    }
+//    @GetMapping(value="/findMagnetCode",params = {"title"})
+//    public @ResponseBody ResponseEntity getMagnetCode(String title) {
+//        return getMagnetCode(title,1,10); //函数重载 解决默认入参问题，在这里没效果
+//    }
+    @GetMapping(value="/findMagnetCode")
+    public @ResponseBody ResponseEntity getMagnetCode(
+            @RequestParam(required = true) String title, //必须写 require为true
+            @RequestParam(required = false, defaultValue = "1") String pageNo,
+            @RequestParam(required = false, defaultValue = "10") String pageSize
+    ){
+        createMongoConfig("av_title_json_collect");
+        int pageC = Integer.parseInt(pageNo);
+        int pageS = Integer.parseInt(pageSize);
+        FindIterable<Document> doci = mongoCollection.find(
+                        Filters.regex("video_title", commonUtils.escapeRegex(title)), //模糊匹配
+                        Document.class
+                )
+                .skip((pageC - 1) * pageS)
+                .limit(pageS)
+                .projection(
+                        new Document("page_name", 1)
+                                .append("video_size", 1)
+                                .append("video_title", 1)
+                                .append("video_url", 1)
+                                .append("_id",1) //默认是 1 因此要去掉
+                        // 这里的 _id 还不能直接被 前端使用
+                );
+        List<Document> doc = doci.into(new ArrayList<>());
+        commonUtils.addId(doc);
+        long total =doc.size();
+        mongoClient.close();
+        return commonUtils.createResponse(doc,total,"customValue");
+    }
+
     @PostMapping("/insertMany")
     public @ResponseBody ResponseEntity insertMany(@RequestBody Params pages) {
         createMongoConfig("actor_manage_system");
