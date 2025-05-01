@@ -56,6 +56,7 @@ public class CommonUtils {
             return "";
         }
         // 转义所有正则表达式特殊字符
-        return Pattern.quote(str);
+        return "(?i)" +  Pattern.quote(str);
+//       Pattern.quote 传入一个字符串，生成一个正则字符串，如果前面添加 (?i) 表示不区分大小写
     }
 }
