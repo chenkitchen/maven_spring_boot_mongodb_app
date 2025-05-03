@@ -15,8 +15,22 @@ import java.util.regex.Pattern;
 
 import java.text.SimpleDateFormat;
 
+//处理动态入参
+import com.mongodb.client.model.Updates;
+import org.bson.conversions.Bson;
+import java.util.ArrayList;
+
 @Component
 public class CommonUtils {
+    public Bson changeParamsHandler(Map<String, Object> updates){
+        List<Bson> list = new ArrayList<>();
+        updates.forEach((field, value) -> {
+            list.add(Updates.set(field, value));
+        });
+
+        return Updates.combine(list);
+    }
+
     public void addId(List<Document> docs){
         for(Document doc : docs){
             ObjectId id = doc.getObjectId("_id");

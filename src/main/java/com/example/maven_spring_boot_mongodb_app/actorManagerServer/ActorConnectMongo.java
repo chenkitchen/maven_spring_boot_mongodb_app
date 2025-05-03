@@ -3,6 +3,7 @@ package com.example.maven_spring_boot_mongodb_app.actorManagerServer;
 import com.example.maven_spring_boot_mongodb_app.components.CommonUtils;
 import com.example.maven_spring_boot_mongodb_app.controller.Params;
 
+import com.example.maven_spring_boot_mongodb_app.controller.UpdateParams;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.*;
@@ -226,6 +227,8 @@ public class ActorConnectMongo {
 //            document.append("id",id.toString());
 //        }
         commonUtils.addId(doc);
+        commonUtils.transfromTime(doc,"updateAt");
+        commonUtils.transfromTime(doc,"createAt");
         long total =doc.size();
         mongoClient.close();
         return commonUtils.createResponse(doc,total,"customValue");
@@ -257,6 +260,8 @@ public class ActorConnectMongo {
                 );
         List<Document> doc = doci.into(new ArrayList<>());
         commonUtils.addId(doc);
+        commonUtils.transfromTime(doc,"updateAt");
+        commonUtils.transfromTime(doc,"createAt");
         long total =doc.size();
         mongoClient.close();
         return commonUtils.createResponse(doc,total,"find_my");
@@ -267,12 +272,13 @@ public class ActorConnectMongo {
     }
 
     @PostMapping(value="/updateActor")
-    public Map<String, Object> updateActor(@RequestBody Params pages) {
+    public Map<String, Object> updateActor(@RequestBody UpdateParams pages) {
         createMongoConfig("actor_manage_system");
 //        FindIterable<Document> doci = mongoCollection.find(
 //                Filters.eq("_id",new ObjectId(pages.getId())), //查所有数据
 //                Document.class
 //        );
+        if(!pages.isId()) return commonUtils.createResponse("修改失败，无id入参");
         String id = pages.getId();
         Bson doci;
         System.out.println(id.length());
@@ -286,10 +292,18 @@ public class ActorConnectMongo {
 //        Bson update = Updates.set("name", pages.getName());
         Date updateT = new Date();
         //创建修改多个字段
-        Bson update = Updates.combine(
-                Updates.set("name", pages.getName()),
-                Updates.set("updateAt", updateT)
-        );
+//        Bson update = Updates.combine(
+//                Updates.set("name", pages.getName()),
+//                Updates.set("updateAt", updateT)
+//        );
+        Map<String, Object> params = new HashMap<>();
+        if(pages.isName()) params.put("name",pages.getName());
+        if(pages.isTypes()) params.put("types",pages.getTypes());
+        if(pages.isFileUrl()) params.put("fileUrl",pages.getFileUrl());
+        if(pages.isRemark()) params.put("remark",pages.getRemark());
+        if(pages.isSuffix()) params.put("filesNameSuffix",pages.getFilesNameSuffix());
+        params.put("updateAt",updateT);
+        Bson update =  commonUtils.changeParamsHandler(params);
         UpdateResult result = mongoCollection.updateOne(doci, update);
         return commonUtils.createResponse("修改了 " + result.getMatchedCount() + "个文档");
     }
