@@ -56,6 +56,8 @@ public class ActorConnectMongo {
                 );
         List<Document> doc = doci.into(new ArrayList<>());
         commonUtils.addId(doc);
+        commonUtils.transfromTime(doc,"updateAt");
+        commonUtils.transfromTime(doc,"createAt");
         long total = mongoCollection.countDocuments();
         mongoClient.close();
         return commonUtils.createResponse(doc,total,"customValue");
@@ -281,7 +283,13 @@ public class ActorConnectMongo {
             System.err.println("Invalid hex string! 入参id有问题");
         }
 //        Bson doci = Filters.eq("_id",new ObjectId(pages.getId()));
-        Bson update = Updates.set("name", pages.getName());
+//        Bson update = Updates.set("name", pages.getName());
+        Date updateT = new Date();
+        //创建修改多个字段
+        Bson update = Updates.combine(
+                Updates.set("name", pages.getName()),
+                Updates.set("updateAt", updateT)
+        );
         UpdateResult result = mongoCollection.updateOne(doci, update);
         return commonUtils.createResponse("修改了 " + result.getMatchedCount() + "个文档");
     }

@@ -6,10 +6,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+
+
+import java.text.SimpleDateFormat;
 
 @Component
 public class CommonUtils {
@@ -18,6 +22,17 @@ public class CommonUtils {
             ObjectId id = doc.getObjectId("_id");
             doc.remove("_id");
             doc.append("id",id.toString());
+        }
+    }
+
+    //时间字段 转换
+    public void transfromTime(List<Document> docs, String key){
+        for(Document doc : docs){
+            Date date =(Date) doc.get(key);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+            doc.remove(key);
+            doc.append(key,sdf.format(date));
         }
     }
 
