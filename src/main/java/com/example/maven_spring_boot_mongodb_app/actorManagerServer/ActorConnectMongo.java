@@ -101,12 +101,10 @@ public class ActorConnectMongo {
         createMongoConfig("av_title_json_collect");
         int pageC = Integer.parseInt(pageNo);
         int pageS = Integer.parseInt(pageSize);
-        FindIterable<Document> doci = mongoCollection.find(
+        FindIterable<Document> dociSize = mongoCollection.find(
                         Filters.regex("video_title", commonUtils.escapeRegex(title)), //模糊匹配
                         Document.class
                 )
-                .skip((pageC - 1) * pageS)
-                .limit(pageS)
                 .projection(
                         new Document("page_name", 1)
                                 .append("video_size", 1)
@@ -115,9 +113,11 @@ public class ActorConnectMongo {
                                 .append("_id",1) //默认是 1 因此要去掉
                         // 这里的 _id 还不能直接被 前端使用
                 );
+        long total = dociSize.into(new ArrayList<>()).size(); // count已经被弃用
+        FindIterable<Document> doci = dociSize.skip((pageC - 1) * pageS)
+                .limit(pageS);
         List<Document> doc = doci.into(new ArrayList<>());
         commonUtils.addId(doc);
-        long total =doc.size();
         mongoClient.close();
         return commonUtils.createResponse(doc,total,"customValue");
     }
