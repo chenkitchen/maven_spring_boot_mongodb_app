@@ -53,6 +53,7 @@ public class ActorConnectMongo {
                                 .append("filesNameSuffix", 1)
                                 .append("remark", 1)
                                 .append("fileUrl",1)
+                                .append("storage",1)
                                 .append("_id",1) //默认是 1 因此要去掉
                 );
         List<Document> doc = doci.into(new ArrayList<>());
@@ -135,6 +136,7 @@ public class ActorConnectMongo {
                     .append("filesNameSuffix", doc.getFilesNameSuffix())
                     .append("remark", doc.getRemark())
                     .append("fileUrl", doc.getFileUrl())
+                    .append("storage", doc.getStorage())
                     .append("createAt", currentDate)
                     .append("updateAt", currentDate);
             docs.add(item);
@@ -152,6 +154,7 @@ public class ActorConnectMongo {
                 .append("filesNameSuffix", pages.getFilesNameSuffix())
                 .append("remark", pages.getRemark())
                 .append("fileUrl", pages.getFileUrl())
+                .append("storage", pages.getStorage())
                 .append("createAt", currentDate)
                 .append("updateAt", currentDate);
         mongoCollection.insertOne(doc);
@@ -302,6 +305,7 @@ public class ActorConnectMongo {
         if(pages.isFileUrl()) params.put("fileUrl",pages.getFileUrl());
         if(pages.isRemark()) params.put("remark",pages.getRemark());
         if(pages.isSuffix()) params.put("filesNameSuffix",pages.getFilesNameSuffix());
+        if(pages.isStorage())  params.put("storage",pages.getStorage());
         params.put("updateAt",updateT);
         Bson update =  commonUtils.changeParamsHandler(params);
         UpdateResult result = mongoCollection.updateOne(doci, update);

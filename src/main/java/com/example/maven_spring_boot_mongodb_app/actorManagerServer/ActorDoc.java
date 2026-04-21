@@ -7,6 +7,7 @@ public class ActorDoc {
     private String filesNameSuffix;
     private String remark;
     private String fileUrl;
+    private String storage;
 
     public String getName() {
         return name;
@@ -16,4 +17,5 @@ public class ActorDoc {
     public String getFilesNameSuffix(){return filesNameSuffix;}
     public String getRemark(){return remark;}
     public String getFileUrl(){return fileUrl;}
+    public String getStorage(){return storage;}
 }

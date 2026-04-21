@@ -21,6 +21,7 @@ public class Params {
     private String filesNameSuffix;
     private String remark;
     private String fileUrl;
+    private String storage;
 
     private List<ActorDoc> list;
 
@@ -29,6 +30,7 @@ public class Params {
     public String getFilesNameSuffix(){return filesNameSuffix;}
     public String getRemark(){return remark;}
     public String getFileUrl(){return fileUrl;}
+    public String getStorage(){return storage;}
 
     public List<ActorDoc> getList() {
         return list;

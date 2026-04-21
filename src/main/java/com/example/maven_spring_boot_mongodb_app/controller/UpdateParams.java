@@ -11,6 +11,7 @@ public class UpdateParams {
     private String remark;
     private String fileUrl;
     private String id;
+    private String storage;
 
     public boolean isName(){
         return name!=null;
@@ -30,4 +31,5 @@ public class UpdateParams {
     public boolean isId(){
         return id!=null;
     }
+    public boolean isStorage(){ return storage!=null;}
 }
